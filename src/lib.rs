@@ -1,5 +1,4 @@
 #![no_std]
-
 use soroban_sdk::{contractimpl, symbol, vec, Env, Symbol, Vec};
 
 pub struct Contract;
@@ -10,3 +9,6 @@ impl Contract {
         vec![&env, symbol!("Hello"), to]
     }
 }
+
+#[cfg(test)]
+mod test;
