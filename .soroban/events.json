@@ -1,4 +1,20 @@
 {
-  "events": [],
-  "latestLedger": 1
+  "events": [
+    {
+      "type": "contract",
+      "ledger": "2",
+      "ledgerClosedAt": "1970-01-01T00:00:10Z",
+      "id": "0000000008589938689-0000000001",
+      "pagingToken": "0000000008589938689-0000000001",
+      "contractId": "0000000000000000000000000000000000000000000000000000000000000001",
+      "topic": [
+        "AAAABQAAAAdDT1VOVEVSAA==",
+        "AAAABQAAAAlpbmNyZW1lbnQAAAA="
+      ],
+      "value": {
+        "xdr": "AAAAAQAAAAE="
+      }
+    }
+  ],
+  "latestLedger": 2
 }
