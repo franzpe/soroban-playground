@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contractimpl, contracttype, symbol, vec, Env, Symbol, Vec};
+use soroban_sdk::{contracterror, contractimpl, contracttype, symbol, vec, Env, Symbol, Vec};
 
 /**
  * Hello world contract
@@ -13,25 +13,45 @@ impl Contract {
     }
 }
 
-const COUNTER: Symbol = symbol!("COUNTER");
-
 /**
  * Increment contract with event
  */
 pub struct IncrementContract;
 
+const COUNTER: Symbol = symbol!("COUNTER");
+const MAX: u32 = 5;
+
+#[contracterror]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+#[repr(u32)]
+pub enum Error {
+    LimitReached = 1,
+}
+
 #[contractimpl]
 impl IncrementContract {
+    pub fn incr_max(env: Env) -> Result<u32, Error> {
+        let mut count: u32 = Self::get_count(env.clone());
+        count += 1;
+
+        if count <= MAX {
+            env.storage().set(&COUNTER, &count);
+            Ok(count)
+        } else {
+            Err(Error::LimitReached)
+        }
+    }
+
     pub fn increment(env: Env) -> u32 {
-        let mut count: u32 = env
-            .storage()
-            .get(&COUNTER)
-            .unwrap_or(Ok(0)) // If no value set, assume 0.
-            .unwrap(); // Panic if the value of COUNTER is not u32.
+        let mut count: u32 = Self::get_count(env.clone());
         count += 1;
         env.storage().set(&COUNTER, &count);
         env.events().publish((COUNTER, symbol!("increment")), count);
         count
+    }
+
+    pub fn get_count(env: Env) -> u32 {
+        env.storage().get(&COUNTER).unwrap_or(Ok(0)).unwrap()
     }
 }
 

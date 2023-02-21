@@ -1,6 +1,6 @@
 #![cfg(test)]
 use crate::{
-    IncrementContract, IncrementContractClient, IncrementContractCustomTypes,
+    Error, IncrementContract, IncrementContractClient, IncrementContractCustomTypes,
     IncrementContractCustomTypesClient, State,
 };
 
@@ -65,4 +65,18 @@ fn test_custom_increment() {
             last_incr: 10
         }
     );
+}
+
+#[test]
+fn test_increment_w_max() {
+    let env = Env::default();
+    let contract_id = env.register_contract(None, IncrementContract);
+    let client = IncrementContractClient::new(&env, &contract_id);
+
+    assert_eq!(client.try_incr_max(), Ok(Ok(1)));
+    assert_eq!(client.try_incr_max(), Ok(Ok(2)));
+    assert_eq!(client.try_incr_max(), Ok(Ok(3)));
+    assert_eq!(client.try_incr_max(), Ok(Ok(4)));
+    assert_eq!(client.try_incr_max(), Ok(Ok(5)));
+    assert_eq!(client.try_incr_max(), Err(Ok(Error::LimitReached)));
 }
