@@ -1,5 +1,8 @@
 #![cfg(test)]
-use crate::{IncrementContract, IncrementContractClient};
+use crate::{
+    IncrementContract, IncrementContractClient, IncrementContractCustomTypes,
+    IncrementContractCustomTypesClient, State,
+};
 
 use super::{Contract, ContractClient};
 use soroban_sdk::{symbol, testutils::Events, vec, Env, IntoVal};
@@ -44,5 +47,22 @@ fn test_event() {
                 3u32.into_val(&env)
             ),
         ]
+    );
+}
+
+#[test]
+fn test_custom_increment() {
+    let env = Env::default();
+    let contract_id = env.register_contract(None, IncrementContractCustomTypes);
+    let client = IncrementContractCustomTypesClient::new(&env, &contract_id);
+
+    assert_eq!(client.incr_state(&1), 1);
+    assert_eq!(client.incr_state(&10), 11);
+    assert_eq!(
+        client.get_state(),
+        State {
+            count: 11,
+            last_incr: 10
+        }
     );
 }
