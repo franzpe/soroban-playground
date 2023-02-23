@@ -1,5 +1,7 @@
 #![no_std]
-use soroban_sdk::{contracterror, contractimpl, contracttype, log, symbol, vec, Env, Symbol, Vec};
+use soroban_sdk::{
+    contracterror, contractimpl, contracttype, log, symbol, vec, Address, Env, Symbol, Vec,
+};
 
 /**
  * Hello world contract
@@ -29,6 +31,12 @@ pub enum Error {
     LimitReached = 1,
 }
 
+#[contracttype]
+#[derive(Clone)]
+pub enum DataKey {
+    Counter(Address),
+}
+
 #[contractimpl]
 impl IncrementContract {
     pub fn incr_max(env: Env) -> Result<u32, Error> {
@@ -51,8 +59,23 @@ impl IncrementContract {
         count
     }
 
+    pub fn incr_auth(env: Env, user: Address, value: u32) -> u32 {
+        user.require_auth();
+
+        let key = DataKey::Counter(user.clone());
+        let mut count: u32 = Self::get_usr_c(env.clone(), key.clone());
+
+        count += value;
+        env.storage().set(&key, &count);
+        count
+    }
+
     pub fn get_count(env: Env) -> u32 {
         env.storage().get(&COUNTER).unwrap_or(Ok(0)).unwrap()
+    }
+
+    pub fn get_usr_c(env: Env, key: DataKey) -> u32 {
+        env.storage().get(&key).unwrap_or(Ok(0)).unwrap()
     }
 }
 
