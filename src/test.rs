@@ -5,7 +5,13 @@ use crate::{
 };
 
 use super::{Contract, ContractClient};
-use soroban_sdk::{symbol, testutils::Events, vec, Env, IntoVal};
+use soroban_sdk::{
+    symbol,
+    testutils::{Events, Logger},
+    vec, Env, IntoVal,
+};
+
+extern crate std;
 
 #[test]
 fn test() {
@@ -14,6 +20,11 @@ fn test() {
     let client = ContractClient::new(&env, &contract_id);
 
     let words = client.hello(&symbol!("Dev"));
+
+    let logs = env.logger().all();
+    std::println!("{}", logs.join("\n"));
+
+    assert_eq!(logs, std::vec!["Hello Symbol(Dev)"]);
     assert_eq!(words, vec![&env, symbol!("Hello"), symbol!("Dev"),]);
 }
 
