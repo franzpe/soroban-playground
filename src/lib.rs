@@ -3,6 +3,8 @@ use soroban_sdk::{
     contracterror, contractimpl, contracttype, log, symbol, vec, Address, Env, Symbol, Vec,
 };
 
+extern crate alloc;
+
 /**
  * Hello world contract
  */
@@ -68,6 +70,19 @@ impl IncrementContract {
         count += value;
         env.storage().set(&key, &count);
         count
+    }
+
+    /// Allocates a temporary vector holding values (0..count), then computes and returns their sum.
+    pub fn sum(_env: Env, count: u32) -> u32 {
+        let mut v1 = alloc::vec![];
+        (0..count).for_each(|i| v1.push(i));
+
+        let mut sum = 0;
+        for i in v1 {
+            sum += i;
+        }
+
+        sum
     }
 
     pub fn get_count(env: Env) -> u32 {
